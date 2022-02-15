@@ -10,13 +10,14 @@ import (
 	"github.com/ringo199/spider/utils"
 )
 
-func DownloadFn(paths []string, fileType string, dl *utils.DownloadList) error {
+func DownloadFn(paths []string, fileType string, nameType string, dl *utils.DownloadList) error {
 	// fmt.Println("开始读取下载列表...")
 	for _, inputPath := range paths {
 		// fmt.Printf("开始读取%s的下载列表...\n", inputPath)
 		body, err := utils.ReadAll(
 			constant.InputBasePath +
 				fileType +
+				nameType +
 				inputPath)
 		if err != nil {
 			return err
@@ -31,7 +32,7 @@ func DownloadFn(paths []string, fileType string, dl *utils.DownloadList) error {
 				if err != nil {
 					return err
 				}
-				fileInfo, _ := os.Stat(constant.OutputBasePath + constant.VideoBasePath + fileType + inputPath + "/" + parseFileName)
+				fileInfo, _ := os.Stat(constant.OutputBasePath + fileType + nameType + inputPath + "/" + parseFileName)
 				if fileInfo == nil {
 					tmpPaths = append(tmpPaths, path)
 				}
@@ -42,7 +43,7 @@ func DownloadFn(paths []string, fileType string, dl *utils.DownloadList) error {
 		} else {
 			// fmt.Printf("%s加入了%d个文件进入下载队列\n", inputPath, len(tmpPaths))
 			for _, path := range tmpPaths {
-				filePath := constant.OutputBasePath + constant.VideoBasePath + fileType + inputPath + "/" + filepath.Base(path)
+				filePath := constant.OutputBasePath + fileType + nameType + inputPath + "/" + filepath.Base(path)
 
 				err = dl.AddWaitList(utils.WaitObject{
 					Url:      path,

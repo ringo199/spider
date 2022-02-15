@@ -14,7 +14,7 @@ import (
 )
 
 var dl utils.DownloadList = utils.DownloadList{
-	Limit: 5,
+	Limit: constant.DownloadLimit,
 	Wcl:   &utils.WriteCounterList{},
 }
 
@@ -41,10 +41,52 @@ func InitialModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	utils.CreateFile(constant.ASoulPath, constant.InputBasePath+constant.BilibiliPath)
-	utils.CreateFile(constant.ASoulPath, constant.InputBasePath+constant.DouyinPath)
+	utils.CreateFile(constant.ASoulPath,
+		constant.InputBasePath+
+			constant.VideoBasePath+
+			constant.BilibiliPath)
+	utils.CreateFile(constant.ASoulPath,
+		constant.InputBasePath+
+			constant.DanmakuBasePath+
+			constant.BilibiliPath)
+	utils.CreateFile(constant.ASoulPath,
+		constant.InputBasePath+
+			constant.SubtitleBasePath+
+			constant.BilibiliPath)
+	utils.CreateFile(constant.ASoulPath,
+		constant.InputBasePath+
+			constant.VideoBasePath+
+			constant.DouyinPath)
 
-	err := download.DownloadFn(constant.ASoulPath, constant.DouyinPath, &dl)
+	err := download.DownloadFn(
+		constant.ASoulPath,
+		constant.VideoBasePath,
+		constant.DouyinPath,
+		&dl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = download.DownloadFn(
+		constant.ASoulPath,
+		constant.VideoBasePath,
+		constant.BilibiliPath,
+		&dl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = download.DownloadFn(
+		constant.ASoulPath,
+		constant.DanmakuBasePath,
+		constant.BilibiliPath,
+		&dl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = download.DownloadFn(
+		constant.ASoulPath,
+		constant.SubtitleBasePath,
+		constant.BilibiliPath,
+		&dl)
 	if err != nil {
 		log.Fatal(err)
 	}
