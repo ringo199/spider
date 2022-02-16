@@ -7,10 +7,26 @@ import (
 	"strings"
 
 	"github.com/ringo199/spider/constant"
+	"github.com/ringo199/spider/session"
 	"github.com/ringo199/spider/utils"
 )
 
+var space struct{}
+var sessionSet map[string]struct{} = make(map[string]struct{})
+
 func InitFileAndWaitDownload(dl *DownloadMgr) error {
+	sessionInfoList, _ := session.ReadSession()
+	for _, sessionInfo := range sessionInfoList {
+		sessionSet[sessionInfo.Url] = space
+		err := dl.AddWaitList(WaitObject{
+			Url:      sessionInfo.Url,
+			FilePath: sessionInfo.FilePath,
+			TmpName:  sessionInfo.TmpName,
+		})
+		if err != nil {
+			return err
+		}
+	}
 	for _, fileTypePath := range constant.FileTypePaths {
 		for _, platformType := range constant.PlatformTypePaths {
 			utils.CreateFile(constant.ASoulPaths,
@@ -48,15 +64,17 @@ func WaitDownload(paths []string, fileType string, nameType string, dl *Download
 		allPaths := strings.Split(string(body), "\n")
 		var tmpPaths []string
 		for _, path := range allPaths {
-			if path != "" {
-				fileName := filepath.Base(path)
-				parseFileName, err := url.QueryUnescape(fileName)
-				if err != nil {
-					return err
-				}
-				fileInfo, _ := os.Stat(constant.OutputBasePath + fileType + nameType + inputPath + "/" + parseFileName)
-				if fileInfo == nil {
-					tmpPaths = append(tmpPaths, path)
+			if _, exist := sessionSet[path]; !exist {
+				if path != "" {
+					fileName := filepath.Base(path)
+					parseFileName, err := url.QueryUnescape(fileName)
+					if err != nil {
+						return err
+					}
+					fileInfo, _ := os.Stat(constant.OutputBasePath + fileType + nameType + inputPath + "/" + parseFileName)
+					if fileInfo == nil {
+						tmpPaths = append(tmpPaths, path)
+					}
 				}
 			}
 		}

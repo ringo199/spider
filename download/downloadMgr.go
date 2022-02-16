@@ -3,6 +3,7 @@ package download
 type WaitObject struct {
 	Url      string
 	FilePath string
+	TmpName  string
 }
 
 type DownloadMgr struct {
@@ -30,7 +31,7 @@ func (dl *DownloadMgr) Update() error {
 			wo := dl.WaitList[0]
 			dl.WaitList = dl.WaitList[1:len(dl.WaitList)]
 			dlo := &DownloadingObject{}
-			dlo.Init(wo.Url, wo.FilePath)
+			dlo.Init(wo.Url, wo.FilePath, wo.TmpName)
 			dl.DownloadingList = append(dl.DownloadingList, dlo)
 		}
 	}

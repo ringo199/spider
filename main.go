@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-
 	p := tea.NewProgram(ui.InitialModel())
 	if err := p.Start(); err != nil {
 		log.Fatal(err)
