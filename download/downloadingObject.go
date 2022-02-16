@@ -86,6 +86,7 @@ func (dlo *DownloadingObject) download() error {
 	out.Seek(stat.Size(), 0)
 	dlo.Wc.Total = uint64(stat.Size())
 	dlo.Wc.AllTotal = uint64(resp.ContentLength)
+	dlo.Wc.GetFormatData(dlo.Wc.AllTotal, &dlo.Wc.AllFormatData)
 	dlo.Status = DOWNLOADING
 	_, err = io.Copy(out, io.TeeReader(resp.Body, dlo.Wc))
 	if err != nil {
