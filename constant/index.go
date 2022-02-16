@@ -1,5 +1,6 @@
 package constant
 
+const TmpBasePath string = "tmpPath/"
 const InputBasePath string = "inputPath/"
 const OutputBasePath string = "outputPath/"
 

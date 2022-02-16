@@ -19,7 +19,6 @@ type WriteCounter struct {
 
 	FormatData    string
 	AllFormatData string
-	IsFinish      bool
 }
 
 func (wc *WriteCounter) getFormatData(n uint64, str *string) error {
@@ -50,8 +49,4 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 	wc.getFormatData(wc.AllTotal, &wc.AllFormatData)
 	wc.Percent = float64(wc.Total*100/wc.AllTotal) / 100
 	return n, nil
-}
-
-func (wc *WriteCounter) Finish() {
-	wc.IsFinish = true
 }

@@ -12,9 +12,8 @@ import (
 	"github.com/ringo199/spider/download"
 )
 
-var dl download.DownloadList = download.DownloadList{
+var dl download.DownloadMgr = download.DownloadMgr{
 	Limit: constant.DownloadLimit,
-	Wcl:   &download.WriteCounterList{},
 }
 
 type model struct {
@@ -44,10 +43,6 @@ func (m model) Init() tea.Cmd {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// 如果无下载文件
-	if dl.CheckOver() {
-		return tea.Quit
-	}
 	return tick
 }
 
@@ -59,11 +54,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	case tickMsg:
-		dl.StartDownload()
-		dl.Wcl.FilterWc()
-		// if dl.CheckOver() {
-		// 	return m, tea.Quit
-		// }
+		dl.Update()
+		if dl.CheckOver() {
+			return m, tea.Quit
+		}
 		return m, tick
 	}
 	return m, nil
@@ -71,7 +65,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func ShowDownloadInfo(m model) string {
 	wls := dl.GetWaitListSize()
-	dls := dl.Wcl.GetListSize()
+	dls := dl.GetDownloadingListSize()
 	if wls == 0 && dls == 0 {
 		return "当前没有需要下载的文件，请点击esc退出"
 	}
@@ -81,9 +75,9 @@ func ShowDownloadInfo(m model) string {
 
 func ShowProgress(m model) string {
 	var s string
-	for k, v := range dl.Wcl.List {
+	for k, v := range dl.DownloadingList {
 		prog := m.ProgressList[k]
-		s += fmt.Sprintf("%s:\n%s\n", v.FilePath, prog.ViewAs(v.Percent))
+		s += fmt.Sprintf("%s:\n%s\n", v.FilePath, prog.ViewAs(v.Wc.Percent))
 	}
 	return indent.String(s, 1)
 }

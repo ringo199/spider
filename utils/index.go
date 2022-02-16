@@ -1,10 +1,15 @@
 package utils
 
 import (
+	"crypto/rand"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
+
+	"github.com/ringo199/spider/constant"
 )
 
 func GetRequest(apiUrl string, params *map[string]string, header *map[string]string) (*http.Response, error) {
@@ -66,4 +71,32 @@ func CreateFile(paths []string, basePath string) error {
 		}
 	}
 	return nil
+}
+
+func CreateTmpDir() error {
+	dir := constant.TmpBasePath
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		os.MkdirAll(dir, os.FileMode(0755))
+	}
+	return nil
+}
+
+func CreateDir(path string) error {
+	dir := filepath.Dir(path)
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		os.MkdirAll(dir, os.FileMode(0755))
+	}
+	return nil
+}
+
+func RandomFilename16Char() (s string, err error) {
+	b := make([]byte, 8)
+	_, err = rand.Read(b)
+	if err != nil {
+		return
+	}
+	s = fmt.Sprintf("%x", b)
+	return
 }
