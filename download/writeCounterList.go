@@ -1,4 +1,4 @@
-package utils
+package download
 
 import (
 	"log"
@@ -39,6 +39,10 @@ func (wcl *WriteCounterList) FilterWc() error {
 	return nil
 }
 
+func (wcl *WriteCounterList) GetListSize() int {
+	return len(wcl.List)
+}
+
 type WaitObject struct {
 	Url      string
 	FilePath string
@@ -63,10 +67,6 @@ func (dl *DownloadList) Check() bool {
 	}
 }
 
-func (dl *DownloadList) IsEmpty() bool {
-	return len(dl.WaitList) == 0
-}
-
 func (dl *DownloadList) StartDownload() error {
 	if dl.Check() {
 		if len(dl.WaitList) > 0 {
@@ -89,4 +89,12 @@ func (dl *DownloadList) CheckOver() bool {
 		return true
 	}
 	return false
+}
+
+func (dl *DownloadList) GetWaitListSize() int {
+	return len(dl.WaitList)
+}
+
+func (dl *DownloadList) IsEmpty() bool {
+	return dl.GetWaitListSize() == 0
 }

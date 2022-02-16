@@ -10,12 +10,11 @@ import (
 	"github.com/muesli/reflow/indent"
 	"github.com/ringo199/spider/constant"
 	"github.com/ringo199/spider/download"
-	"github.com/ringo199/spider/utils"
 )
 
-var dl utils.DownloadList = utils.DownloadList{
+var dl download.DownloadList = download.DownloadList{
 	Limit: constant.DownloadLimit,
-	Wcl:   &utils.WriteCounterList{},
+	Wcl:   &download.WriteCounterList{},
 }
 
 type model struct {
@@ -41,54 +40,13 @@ func InitialModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	utils.CreateFile(constant.ASoulPath,
-		constant.InputBasePath+
-			constant.VideoBasePath+
-			constant.BilibiliPath)
-	utils.CreateFile(constant.ASoulPath,
-		constant.InputBasePath+
-			constant.DanmakuBasePath+
-			constant.BilibiliPath)
-	utils.CreateFile(constant.ASoulPath,
-		constant.InputBasePath+
-			constant.SubtitleBasePath+
-			constant.BilibiliPath)
-	utils.CreateFile(constant.ASoulPath,
-		constant.InputBasePath+
-			constant.VideoBasePath+
-			constant.DouyinPath)
-
-	err := download.DownloadFn(
-		constant.ASoulPath,
-		constant.VideoBasePath,
-		constant.DouyinPath,
-		&dl)
+	err := download.InitFileAndWaitDownload(&dl)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = download.DownloadFn(
-		constant.ASoulPath,
-		constant.VideoBasePath,
-		constant.BilibiliPath,
-		&dl)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = download.DownloadFn(
-		constant.ASoulPath,
-		constant.DanmakuBasePath,
-		constant.BilibiliPath,
-		&dl)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = download.DownloadFn(
-		constant.ASoulPath,
-		constant.SubtitleBasePath,
-		constant.BilibiliPath,
-		&dl)
-	if err != nil {
-		log.Fatal(err)
+	// 如果无下载文件
+	if dl.CheckOver() {
+		return tea.Quit
 	}
 	return tick
 }
@@ -111,17 +69,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func ShowDownloadInfo(m model) string {
+	wls := dl.GetWaitListSize()
+	dls := dl.Wcl.GetListSize()
+	if wls == 0 && dls == 0 {
+		return "当前没有需要下载的文件，请点击esc退出"
+	}
+	return fmt.Sprintf("当前待下载:%d，当前正在下载:%d",
+		wls, dls)
+}
+
 func ShowProgress(m model) string {
 	var s string
 	for k, v := range dl.Wcl.List {
 		prog := m.ProgressList[k]
-		s += fmt.Sprintf("%s: %s\n", v.FilePath, prog.ViewAs(v.Percent))
+		s += fmt.Sprintf("%s:\n%s\n", v.FilePath, prog.ViewAs(v.Percent))
 	}
 	return indent.String(s, 1)
 }
 
 func (m model) View() string {
-	return ShowProgress(m)
+	return fmt.Sprintf("%s\n\n%s\n", ShowDownloadInfo(m), ShowProgress(m))
 }
 
 type tickMsg time.Time
