@@ -32,6 +32,10 @@ func CreateSession(tmpName string, sessionInfo SessionInfo) error {
 }
 
 func ReadSession() ([]*SessionInfo, error) {
+	err := utils.CreateTmpDir()
+	if err != nil {
+		return nil, err
+	}
 	files, err := utils.ReadDir(constant.TmpBasePath)
 	if err != nil {
 		return nil, err
