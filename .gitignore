@@ -4,8 +4,7 @@ inputPath/
 outputPath/
 logs/
 sh/
+dist/
 
 go.sum
-
-spider
 
