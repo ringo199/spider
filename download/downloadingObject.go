@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/ringo199/spider/constant"
 	"github.com/ringo199/spider/session"
@@ -60,15 +61,6 @@ func (dlo *DownloadingObject) download() error {
 	if err != nil {
 		return err
 	}
-	header := map[string]string{
-		"referrer":   referrer,
-		"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36",
-	}
-	resp, err := utils.GetRequest(dlo.Url, nil, &header)
-	if err != nil {
-		return err
-	}
-
 	err = utils.CreateTmpDir()
 	if err != nil {
 		return err
@@ -83,12 +75,25 @@ func (dlo *DownloadingObject) download() error {
 		return err
 	}
 	out.Seek(stat.Size(), 0)
+
+	header := map[string]string{
+		"referrer":   referrer,
+		"Range":      "bytes=" + strconv.FormatInt(stat.Size(), 10) + "-",
+		"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36",
+	}
+	resp, err := utils.GetRequest(dlo.Url, nil, &header)
+	if err != nil {
+		return err
+	}
+
 	dlo.Wc.Total = uint64(stat.Size())
-	dlo.Wc.AllTotal = uint64(resp.ContentLength)
+	dlo.Wc.AllTotal = dlo.Wc.Total + uint64(resp.ContentLength)
 	dlo.Wc.GetFormatData(dlo.Wc.AllTotal, &dlo.Wc.AllFormatData)
 	dlo.Status = DOWNLOADING
 	_, err = io.Copy(out, io.TeeReader(resp.Body, dlo.Wc))
 	if err != nil {
+		defer resp.Body.Close()
+		defer out.Close()
 		return err
 	}
 	dlo.Status = FINISH
@@ -98,16 +103,18 @@ func (dlo *DownloadingObject) download() error {
 	return nil
 }
 
-func (dlo *DownloadingObject) startDownload() error {
+func (dlo *DownloadingObject) reDownload() {
+	err := dlo.download()
+	if err != nil {
+		utils.SendlogMsg(err.Error())
+		dlo.reDownload()
+	}
+}
+
+func (dlo *DownloadingObject) startDownload() {
 	dlo.Wc = &WriteCounter{}
 	dlo.Status = WAITING
-	go func() {
-		err := dlo.download()
-		if err != nil {
-			utils.SendlogMsg(err.Error())
-		}
-	}()
-	return nil
+	go dlo.reDownload()
 }
 
 func (dlo *DownloadingObject) downloadFinish() error {

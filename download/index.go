@@ -55,16 +55,16 @@ func InitFileAndWaitDownload(dl *DownloadMgr) error {
 	return nil
 }
 
-func WaitDownload(paths []string, fileType string, nameType string, dl *DownloadMgr) error {
+func WaitDownload(paths []string, fileTypePath string, platformType string, dl *DownloadMgr) error {
 	// fmt.Println("开始读取下载列表...")
-	for _, inputPath := range paths {
-		utils.SendlogMsg(
-			fmt.Sprintf("开始读取%s的下载列表...", inputPath))
+	for _, memPath := range paths {
+		// utils.SendlogMsg(
+		// 	fmt.Sprintf("开始读取%s%s%s的下载列表...", fileTypePath, platformType, memPath))
 		body, err := utils.ReadAll(
 			constant.InputBasePath +
-				fileType +
-				nameType +
-				inputPath)
+				fileTypePath +
+				platformType +
+				memPath)
 		if err != nil {
 			return err
 		}
@@ -79,7 +79,7 @@ func WaitDownload(paths []string, fileType string, nameType string, dl *Download
 					if err != nil {
 						return err
 					}
-					fileInfo, _ := os.Stat(constant.OutputBasePath + fileType + nameType + inputPath + "/" + parseFileName)
+					fileInfo, _ := os.Stat(constant.OutputBasePath + fileTypePath + platformType + memPath + "/" + parseFileName)
 					if fileInfo == nil {
 						tmpPaths = append(tmpPaths, path)
 					}
@@ -87,13 +87,13 @@ func WaitDownload(paths []string, fileType string, nameType string, dl *Download
 			}
 		}
 		if len(tmpPaths) <= 0 {
-			utils.SendlogMsg(
-				fmt.Sprintf("%s没有文件需要下载", inputPath))
+			// utils.SendlogMsg(
+			// 	fmt.Sprintf("%s%s%s没有文件需要下载", fileTypePath, platformType, memPath))
 		} else {
-			utils.SendlogMsg(
-				fmt.Sprintf("%s加入了%d个文件进入下载队列", inputPath, len(tmpPaths)))
+			// utils.SendlogMsg(
+			// 	fmt.Sprintf("%s%s%s加入了%d个文件进入下载队列", fileTypePath, platformType, memPath, len(tmpPaths)))
 			for _, path := range tmpPaths {
-				filePath := constant.OutputBasePath + fileType + nameType + inputPath + "/" + filepath.Base(path)
+				filePath := constant.OutputBasePath + fileTypePath + platformType + memPath + "/" + filepath.Base(path)
 
 				err = dl.AddWaitList(WaitObject{
 					Url:      path,

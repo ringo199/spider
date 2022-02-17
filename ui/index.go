@@ -56,7 +56,8 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if k := msg.String(); k == "t" {
+		k := msg.String()
+		if k == "t" {
 			m.IsShowLog = !m.IsShowLog
 			return m, tick
 		}
@@ -69,6 +70,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			utils.SendlogMsg(err.Error())
 		}
 		if dl.CheckOver() {
+			// utils.SendlogMsg("下载已结束，请点击esc退出")
 			m.IsShowLog = true
 			return m, tick
 		}
@@ -93,8 +95,8 @@ func ShowProgress(m model) string {
 	var s string
 	for k, v := range dl.DownloadingList {
 		prog := m.ProgressList[k]
-		s += fmt.Sprintf("%s:\n%s size：%s\n",
-			v.FilePath, prog.ViewAs(v.Wc.Percent), v.Wc.AllFormatData)
+		s += fmt.Sprintf("%s: lastSize: %s\n%s curSize: %s size: %s\n",
+			v.FilePath, v.Wc.LastTransSizeFormatData, prog.ViewAs(v.Wc.Percent), v.Wc.FormatData, v.Wc.AllFormatData)
 	}
 	return indent.String(s, 1)
 }

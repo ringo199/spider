@@ -12,15 +12,15 @@ const (
 )
 
 type WriteCounter struct {
-	FilePath string
-	CurSpeed uint64
-	Total    uint64
-	AllTotal uint64
-	Percent  float64
+	FilePath      string
+	LastTransSize uint64
+	Total         uint64
+	AllTotal      uint64
+	Percent       float64
 
-	CurSpeedFormatData string
-	FormatData         string
-	AllFormatData      string
+	LastTransSizeFormatData string
+	FormatData              string
+	AllFormatData           string
 }
 
 func (wc *WriteCounter) GetFormatData(n uint64, str *string) error {
@@ -46,11 +46,19 @@ func (wc *WriteCounter) GetFormatData(n uint64, str *string) error {
 
 func (wc *WriteCounter) Write(p []byte) (int, error) {
 	n := len(p)
-	wc.CurSpeed = uint64(n)
-	wc.Total += wc.CurSpeed
+	wc.LastTransSize = uint64(n)
+	wc.Total += wc.LastTransSize
 
-	wc.GetFormatData(wc.CurSpeed, &wc.CurSpeedFormatData)
+	wc.GetFormatData(wc.LastTransSize, &wc.LastTransSizeFormatData)
 	wc.GetFormatData(wc.Total, &wc.FormatData)
-	wc.Percent = float64(wc.Total*100/wc.AllTotal) / 100
+	if wc.AllTotal != 0 {
+		wc.Percent = float64(wc.Total*100/wc.AllTotal) / 100
+	} else {
+		if wc.Total != 0 {
+			wc.Percent = 100
+		} else {
+			wc.Percent = 0
+		}
+	}
 	return n, nil
 }

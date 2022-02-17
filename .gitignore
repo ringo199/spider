@@ -1,8 +1,9 @@
 .vscode
-tmpPath
-inputPath
-outputPath
-videos
+tmpPath/
+inputPath/
+outputPath/
+logs/
+sh/
 
 go.sum
 

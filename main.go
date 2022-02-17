@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	// test.CleanErrFile()
 	p := ui.Initial()
 	if err := p.Start(); err != nil {
 		log.Fatal(err)

@@ -13,12 +13,15 @@ const BilibiliPath string = "bilibili/"
 const DouyinPath string = "douyin/"
 
 var FileTypePaths = []string{
-	AudioBasePath,
 	SubtitleBasePath,
+	AudioBasePath,
+	// VideoBasePath,
+	// DanmakuBasePath,
 }
 
 var PlatformTypePaths = []string{
 	BilibiliPath,
+	// DouyinPath,
 }
 
 var ASoulPaths = []string{
