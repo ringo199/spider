@@ -34,4 +34,4 @@ var ASoulPaths = []string{
 	"eileen",
 }
 
-const DownloadLimit int = 5
+const DownloadLimit int = 2
