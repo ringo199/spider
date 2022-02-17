@@ -122,6 +122,6 @@ func tick() tea.Msg {
 func Initial() *tea.Program {
 	return tea.NewProgram(
 		InitialModel(),
-		tea.WithMouseCellMotion(),
+		// tea.WithMouseCellMotion(),
 	)
 }
