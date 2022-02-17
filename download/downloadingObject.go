@@ -1,7 +1,6 @@
 package download
 
 import (
-	"fmt"
 	"io"
 	"net/url"
 	"os"
@@ -105,7 +104,7 @@ func (dlo *DownloadingObject) startDownload() error {
 	go func() {
 		err := dlo.download()
 		if err != nil {
-			fmt.Println(err)
+			utils.SendlogMsg(err.Error())
 		}
 	}()
 	return nil
