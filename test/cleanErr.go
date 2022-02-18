@@ -13,7 +13,7 @@ import (
 
 func CleanErrFile() {
 	baseDir := constant.OutputBasePath +
-		constant.AudioBasePath +
+		constant.DanmakuBasePath +
 		constant.BilibiliPath +
 		"asoul/"
 	files, err := utils.ReadDir(baseDir)
@@ -21,7 +21,7 @@ func CleanErrFile() {
 		panic(err)
 	}
 
-	f, err := os.OpenFile("logs/deleteAudios.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
+	f, err := os.OpenFile("logs/delete.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +33,7 @@ func CleanErrFile() {
 		}
 		u := url.QueryEscape(path.Name())
 		u = strings.ReplaceAll(u, "+", "%20")
-		apiurl := "https://asoul-rec.herokuapp.com/ASOUL-REC/AAC%E5%BD%95%E6%92%AD%E9%9F%B3%E8%BD%A8/" + u
+		apiurl := "https://asoul-rec.herokuapp.com/ASOUL-REC/ASS%E5%BC%B9%E5%B9%95%E6%96%87%E4%BB%B6/" + u
 
 		header := map[string]string{
 			"referrer":   "https://asoul-rec.herokuapp.com",
@@ -52,6 +52,7 @@ func CleanErrFile() {
 		defer resp.Body.Close()
 
 		f.WriteString(str)
+		utils.CreateDir(filepath.Join(baseDir, "../", "tmp", path.Name()))
 		if off != 0 {
 			os.Remove(baseDir + path.Name())
 		} else {

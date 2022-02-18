@@ -94,9 +94,12 @@ func ShowDownloadInfo(m model) string {
 func ShowProgress(m model) string {
 	var s string
 	for k, v := range dl.DownloadingList {
+		if v == nil {
+			continue
+		}
 		prog := m.ProgressList[k]
-		s += fmt.Sprintf("%s: %s\n%s curSize: %s size: %s\n",
-			v.FilePath, v.Status, prog.ViewAs(v.Wc.Percent), v.Wc.FormatData, v.Wc.AllFormatData)
+		s += fmt.Sprintf("%s:\n%s\nstatus: %s curSize: %s size: %s\n\n",
+			v.FilePath, prog.ViewAs(v.Wc.Percent), v.Status, v.Wc.FormatData, v.Wc.AllFormatData)
 	}
 	return indent.String(s, 1)
 }

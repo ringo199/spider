@@ -8,6 +8,9 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/ringo199/spider/constant"
 )
@@ -99,4 +102,25 @@ func RandomFilename16Char() (s string, err error) {
 	}
 	s = fmt.Sprintf("%x", b)
 	return
+}
+
+func ParseDate(d string) (string, error) {
+	ds := strings.Split(d, "-")
+	year, err := strconv.Atoi(ds[0])
+	if err != nil {
+		return "", err
+	}
+	year += 2000
+	pre_month, err := strconv.Atoi(ds[1])
+	if err != nil {
+		return "", err
+	}
+
+	month := time.Month(pre_month)
+	date, err := strconv.Atoi(ds[2])
+	if err != nil {
+		return "", err
+	}
+	dt := time.Date(year, month, date, 0, 0, 0, 0, time.Local)
+	return dt.Format("2006.01.02"), nil
 }

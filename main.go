@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	// test.Test()
 	// test.CleanErrFile()
 	p := ui.Initial()
 	if err := p.Start(); err != nil {
