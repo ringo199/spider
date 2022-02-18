@@ -103,18 +103,18 @@ func (dlo *DownloadingObject) download() error {
 	return nil
 }
 
-func (dlo *DownloadingObject) reDownload() {
-	err := dlo.download()
-	if err != nil {
-		utils.SendlogMsg(err.Error())
-		dlo.reDownload()
-	}
-}
-
 func (dlo *DownloadingObject) startDownload() {
-	dlo.Wc = &WriteCounter{}
+	if dlo.Wc.Total == 0 {
+		dlo.Wc = &WriteCounter{}
+	}
 	dlo.Status = WAITING
-	go dlo.reDownload()
+	go func() {
+		err := dlo.download()
+		if err != nil {
+			utils.SendlogMsg(err.Error())
+			dlo.Status = PREPARE
+		}
+	}()
 }
 
 func (dlo *DownloadingObject) downloadFinish() error {

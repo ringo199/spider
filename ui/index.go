@@ -95,19 +95,20 @@ func ShowProgress(m model) string {
 	var s string
 	for k, v := range dl.DownloadingList {
 		prog := m.ProgressList[k]
-		s += fmt.Sprintf("%s: lastSize: %s\n%s curSize: %s size: %s\n",
-			v.FilePath, v.Wc.LastTransSizeFormatData, prog.ViewAs(v.Wc.Percent), v.Wc.FormatData, v.Wc.AllFormatData)
+		s += fmt.Sprintf("%s:\n%s curSize: %s size: %s\n",
+			v.FilePath, prog.ViewAs(v.Wc.Percent), v.Wc.FormatData, v.Wc.AllFormatData)
 	}
 	return indent.String(s, 1)
 }
 
 func (m model) View() string {
 	if m.IsShowLog {
-		vp := viewport.Model{Width: 375, Height: 20}
+		// vp := viewport.Model{Width: 375, Height: 20}
 
-		vp.SetContent(utils.GetLogMsg())
-		m.Log = vp
-		return m.Log.View()
+		// vp.SetContent(utils.GetLogMsg())
+		// m.Log = vp
+		// m.Log.View()
+		return utils.GetLogMsg()
 	}
 	return fmt.Sprintf("%s\n\n%s\n", ShowDownloadInfo(m), ShowProgress(m))
 }
