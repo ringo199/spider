@@ -104,9 +104,7 @@ func (dlo *DownloadingObject) download() error {
 }
 
 func (dlo *DownloadingObject) startDownload() {
-	if dlo.Wc.Total == 0 {
-		dlo.Wc = &WriteCounter{}
-	}
+	dlo.Wc = &WriteCounter{}
 	dlo.Status = WAITING
 	go func() {
 		err := dlo.download()

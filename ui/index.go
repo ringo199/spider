@@ -95,8 +95,8 @@ func ShowProgress(m model) string {
 	var s string
 	for k, v := range dl.DownloadingList {
 		prog := m.ProgressList[k]
-		s += fmt.Sprintf("%s:\n%s curSize: %s size: %s\n",
-			v.FilePath, prog.ViewAs(v.Wc.Percent), v.Wc.FormatData, v.Wc.AllFormatData)
+		s += fmt.Sprintf("%s: %s\n%s curSize: %s size: %s\n",
+			v.FilePath, v.Status, prog.ViewAs(v.Wc.Percent), v.Wc.FormatData, v.Wc.AllFormatData)
 	}
 	return indent.String(s, 1)
 }
