@@ -39,6 +39,10 @@ var asFullMap map[string]string = map[string]string{
 }
 
 func (list *AsDBInfoList) ParseJson() {
+	body0, err := utils.ReadAll("outputPath/asdb/2020.json")
+	if err != nil {
+		panic(err)
+	}
 	body1, err := utils.ReadAll("outputPath/asdb/2021.json")
 	if err != nil {
 		panic(err)
@@ -48,13 +52,21 @@ func (list *AsDBInfoList) ParseJson() {
 		panic(err)
 	}
 
-	err = json.Unmarshal(body1, &list.List)
+	list0 := &AsDBInfoList{}
+	list1 := &AsDBInfoList{}
+	list2 := &AsDBInfoList{}
+
+	err = json.Unmarshal(body0, &list0.List)
 
 	if err != nil {
 		panic(err)
 	}
 
-	list2 := &AsDBInfoList{}
+	err = json.Unmarshal(body1, &list1.List)
+
+	if err != nil {
+		panic(err)
+	}
 
 	err = json.Unmarshal(body2, &list2.List)
 
@@ -62,6 +74,7 @@ func (list *AsDBInfoList) ParseJson() {
 		panic(err)
 	}
 
+	list.List = append(list0.List, list1.List...)
 	list.List = append(list.List, list2.List...)
 }
 

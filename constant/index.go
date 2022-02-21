@@ -16,11 +16,11 @@ var FileTypePaths = []string{
 	// SubtitleBasePath,
 	// AudioBasePath,
 	// VideoBasePath,
-	DanmakuBasePath,
+	// DanmakuBasePath,
 }
 
 var PlatformTypePaths = []string{
-	BilibiliPath,
+	// BilibiliPath,
 	// DouyinPath,
 }
 

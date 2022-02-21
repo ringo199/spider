@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -123,4 +124,35 @@ func ParseDate(d string) (string, error) {
 	}
 	dt := time.Date(year, month, date, 0, 0, 0, 0, time.Local)
 	return dt.Format("2006.01.02"), nil
+}
+
+func RunCmd(cmd_file string, cmd_args []string) (string, error) {
+	cmd := exec.Command(cmd_file, cmd_args...)
+	fmt.Println(cmd.String())
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return "", err
+	}
+	defer stdout.Close()
+	if err = cmd.Start(); err != nil {
+		return "", err
+	}
+
+	if opBytes, err := ioutil.ReadAll(stdout); err != nil {
+		return "", err
+	} else {
+		return string(opBytes), nil
+	}
+}
+
+func OpenFile(path string) (*os.File, error) {
+	err := CreateDir(path)
+	if err != nil {
+		return nil, err
+	}
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
 }

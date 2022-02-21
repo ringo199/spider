@@ -1,6 +1,9 @@
 package test
 
-import "github.com/ringo199/spider/filter"
+import (
+	"github.com/ringo199/spider/filter"
+	"github.com/ringo199/spider/spleeter"
+)
 
 func Test() {
 	list := filter.AsDBInfoList{}
@@ -13,4 +16,8 @@ func Test() {
 			panic(err)
 		}
 	}
+}
+
+func TestSpleeter() {
+	spleeter.Spleeter()
 }
