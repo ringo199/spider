@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/ringo199/spider/filter"
+	"github.com/ringo199/spider/mockingbird"
 	"github.com/ringo199/spider/spleeter"
 )
 
@@ -20,4 +21,8 @@ func Test() {
 
 func TestSpleeter() {
 	spleeter.Spleeter()
+}
+
+func TestPreGenerate() {
+	mockingbird.PreGenerate()
 }

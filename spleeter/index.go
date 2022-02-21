@@ -9,7 +9,7 @@ import (
 )
 
 func Spleeter() {
-	outPath := "spleeter/outputPath/"
+	outPath := "outputPath/spleeter/inputPath"
 	inputPath := "outputPath/audios/bilibili/diana/output/"
 
 	files, err := utils.ReadDir(inputPath)

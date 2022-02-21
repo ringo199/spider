@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"crypto/md5"
 	"crypto/rand"
+	"crypto/sha1"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -105,6 +108,18 @@ func RandomFilename16Char() (s string, err error) {
 	return
 }
 
+func GetMd5(data string) string {
+	t := md5.New()
+	io.WriteString(t, data)
+	return fmt.Sprintf("%x", t.Sum(nil))
+}
+
+func GetSha1(data string) string {
+	t := sha1.New()
+	io.WriteString(t, data)
+	return fmt.Sprintf("%x", t.Sum(nil))
+}
+
 func ParseDate(d string) (string, error) {
 	ds := strings.Split(d, "-")
 	year, err := strconv.Atoi(ds[0])
@@ -155,4 +170,23 @@ func OpenFile(path string) (*os.File, error) {
 		return nil, err
 	}
 	return f, nil
+}
+
+func CopyFile(dstName, srcName string) (written int64, err error) {
+	src, err := os.Open(srcName)
+	if err != nil {
+		return
+	}
+	defer src.Close()
+
+	err = CreateDir(dstName)
+	if err != nil {
+		return
+	}
+	dst, err := os.OpenFile(dstName, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return
+	}
+	defer dst.Close()
+	return io.Copy(dst, src)
 }
